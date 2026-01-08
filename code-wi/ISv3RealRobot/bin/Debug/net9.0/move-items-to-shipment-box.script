@@ -1,0 +1,83 @@
+def move_item_to_shipment_box():
+  # ====== DROP (behold disse som dine to bunker) ======
+  BIG_X   = 3
+  BIG_Y   = 3
+  SMALL_X = 5
+  SMALL_Y = 3
+
+  # ====== PICK: 3 positioner (samme linje = samme Y, forskellige X) ======
+  # itemId kommer fra C# som {0} og er 0,1,2
+  ITEM_ID = {0}
+
+  PICK_Y = 1
+  PICK_Z = -1.35
+
+  PICK1_X = 0
+  PICK2_X = 1
+  PICK3_X = 2
+
+  # ====== SENSOR ======
+  SENSOR_DI = 7   # DI7 (PE_350mm)
+  SENSOR_X = 4
+  SENSOR_Y = 1
+
+  global SEP = 0.1  # grid afstand i meter (0.1 = 10 cm)
+
+  # ====== Gripper RPC ======
+  global RPC = rpc_factory("xmlrpc", "http://localhost:41414")
+  global TOOL_INDEX = 0
+
+  def rg_is_busy():
+    return RPC.rg_get_busy(TOOL_INDEX)
+  end
+
+  def rg_grip(width, force=10):
+    RPC.rg_grip(TOOL_INDEX, width + .0, force + .0)
+    sleep(0.01)
+    while(rg_is_busy()):
+    end
+  end
+
+  def pick():
+    rg_grip(0)
+  end
+
+  def place():
+    rg_grip(50)
+  end
+
+  def moveto(x, y, z=0):
+    p = p[0 + x*SEP, -0.4 + y*SEP, z*SEP, d2r(180), 0, 0]
+    movej(get_inverse_kin(p))
+  end
+
+  # ====== Vælg korrekt pickup X ud fra ITEM_ID ======
+  PICK_X = PICK1_X
+  if (ITEM_ID == 1):
+    PICK_X = PICK2_X
+  end
+  if (ITEM_ID == 2):
+    PICK_X = PICK3_X
+  end
+
+  # ====== PICK ======
+  place()                       # åbner gripper
+  moveto(PICK_X, PICK_Y)
+  moveto(PICK_X, PICK_Y, PICK_Z)
+  pick()                        # lukker gripper
+  moveto(PICK_X, PICK_Y)
+
+  # ====== MÅL VED SENSOR ======
+  moveto(SENSOR_X, SENSOR_Y)
+  sleep(0.10)                   # stabiliser input
+  is_big = get_digital_in(SENSOR_DI)
+
+  # ====== SORTÉR ======
+  if (is_big):
+    moveto(BIG_X, BIG_Y)
+  else:
+    moveto(SMALL_X, SMALL_Y)
+  end
+
+  place()                       # slip emne
+end

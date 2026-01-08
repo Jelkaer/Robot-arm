@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="InventorySystem.MainWindow"
+        Title="Poka-Yoke Robot" Width="700" Height="480">
+
+    <StackPanel Margin="16" Spacing="10">
+        <TextBlock FontSize="18" Text="Poka-Yoke: 1 sensor → BIG/SMALL → 2 bunker" />
+
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock VerticalAlignment="Center" Text="Robot IP:" />
+            <TextBox x:Name="IpAddress" Width="220" Text="172.20.254.201" />
+            <Button Click="ConnectButton_OnClick">Connect</Button>
+            <Button Click="ProcessButton_OnClick">Run (3 positioner)</Button>
+        </StackPanel>
+
+        <TextBlock Text="Status:" FontWeight="Bold"/>
+        <TextBox x:Name="StatusMessages"
+                 Height="360"
+                 AcceptsReturn="True"
+                 IsReadOnly="True"
+                 TextWrapping="Wrap"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+    </StackPanel>
+</Window>
